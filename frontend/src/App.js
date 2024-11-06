@@ -25,6 +25,7 @@ function App() {
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
+          responseType: "blob", // تحويل الاستجابة إلى Blob للتنزيل
           onUploadProgress: (progressEvent) => {
             const percentCompleted = Math.round(
               (progressEvent.loaded * 100) / progressEvent.total
@@ -34,11 +35,18 @@ function App() {
         }
       );
 
-      // عرض الرسالة من الخادم
-      setMessage(`Translation complete! File saved at: ${response.data.path}`);
-      setProgress(100); // تعيين التقدم إلى 100 عند اكتمال الترجمة
+      // إعداد الملف كتنزيل في المتصفح
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", file.name.replace(".srt", "_arabic.srt"));
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      setMessage("Translation complete! The file is downloading...");
+      setProgress(100);
     } catch (error) {
-      // التحقق من رسالة الخطأ من الخادم
       if (error.response && error.response.data) {
         setMessage(error.response.data.message);
       } else {
@@ -49,7 +57,6 @@ function App() {
   };
 
   useEffect(() => {
-    // فتح اتصال SSE لتلقي تحديثات التقدم
     const eventSource = new EventSource("http://localhost:3001/progress");
 
     eventSource.onmessage = (event) => {

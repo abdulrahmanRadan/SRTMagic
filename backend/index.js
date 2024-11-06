@@ -10,10 +10,8 @@ const upload = multer({ dest: "uploads/" });
 
 let clients = [];
 
-// تفعيل CORS لجميع الطلبات
 app.use(cors());
 
-// إعداد SSE لتحديثات التقدم
 app.get("/progress", (req, res) => {
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
@@ -66,7 +64,6 @@ async function translateLines(lines, targetLang) {
   return translatedLines;
 }
 
-// مسار للترجمة
 app.post("/translate", upload.single("file"), async (req, res) => {
   const { file } = req;
   const targetLang = "ar";
@@ -77,31 +74,21 @@ app.post("/translate", upload.single("file"), async (req, res) => {
   const srtContent = fs.readFileSync(filePath, "utf-8");
   const srtLines = srtContent.split("\n");
 
-  const outputDir = path.join(__dirname, "output");
-  if (!fs.existsSync(outputDir)) {
-    fs.mkdirSync(outputDir);
-  }
-
-  const outputPath = path.join(
-    outputDir,
-    `${file.originalname.replace(".srt", "_arabic.srt")}`
-  );
-
-  // التحقق مما إذا كان الملف قد تم ترجمته مسبقًا
-  if (fs.existsSync(outputPath)) {
-    return res.status(400).json({ message: "الملف موجود مسبقًا" });
-  }
-
   const translatedLines = await translateLines(srtLines, targetLang);
 
-  fs.writeFileSync(outputPath, translatedLines.join("\n"), "utf-8");
-
-  sendProgressUpdate(100);
-
-  res.json({ message: "Translation complete", path: outputPath });
+  // إعداد الملف كاستجابة قابلة للتنزيل
+  const translatedFileName = `${file.originalname.replace(
+    ".srt",
+    "_arabic.srt"
+  )}`;
+  res.setHeader(
+    "Content-Disposition",
+    `attachment; filename=${translatedFileName}`
+  );
+  res.setHeader("Content-Type", "text/srt");
+  res.send(translatedLines.join("\n"));
 });
 
-// بدء الخادم
 app.listen(3001, () => {
   console.log("Server running on http://localhost:3001");
 });
