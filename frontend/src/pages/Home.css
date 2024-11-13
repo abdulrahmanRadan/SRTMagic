@@ -1,0 +1,40 @@
+/* Home.css */
+.root {
+  @apply flex flex-col h-[100vh];
+}
+
+.main-page {
+  @apply flex flex-col items-center justify-center m-4;
+}
+
+.wrapper {
+  @apply inline-block;
+}
+
+.wrapper .text {
+  @apply text-2xl tracking-tight font-semibold w-full uppercase;
+  @apply whitespace-nowrap overflow-hidden;
+  border-right: 5px solid;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #f97800;
+  animation: typing 3s steps(27), cursor 0.7s step-end infinite alternate;
+}
+
+@keyframes cursor {
+  50% {
+    border-color: transparent;
+  }
+}
+@keyframes typing {
+  from {
+    width: 0;
+  }
+}
+
+.main-page input {
+  @apply inset-px bg-gray-300 p-4 rounded-xl fill-emerald-50;
+}
+.main-page button {
+  @apply inset-px bg-blue-400 p-4 rounded-xl fill-emerald-50 m-3 text-xl font-serif text-gray-700;
+  @apply border-2 border-emerald-300 shadow-2xl shadow-sky-300;
+}

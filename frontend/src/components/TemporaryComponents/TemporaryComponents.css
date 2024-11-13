@@ -1,0 +1,63 @@
+/* TemporaryComponent.css */
+body,
+html {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20rem;
+  height: 20rem;
+  position: relative;
+}
+
+.loading::before,
+.loading::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  inset: 0;
+  animation: scale 2s infinite, colorChange 3s infinite;
+  animation-timing-function: cubic-bazier(0.42, 0, 0.58, 1);
+}
+
+.loading::before {
+  background-color: blue;
+  --animation-delay: 0ms;
+}
+
+.loading::after {
+  background-color: red;
+  transform: scale(0);
+  inset: 6px;
+  --animation-delay: 500ms;
+}
+
+@keyframes scale {
+  from {
+    transform: scale(0);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes colorChange {
+  0% {
+    background-color: var(--color1);
+  }
+  50% {
+    background-color: var(--color2);
+  }
+  100% {
+    background-color: var(--color3);
+  }
+}
