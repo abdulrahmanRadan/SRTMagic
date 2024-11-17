@@ -3,8 +3,8 @@ import axios from "axios";
 import TemporaryComponents from "../components/TemporaryComponents/TemporaryComponents";
 import Header from "../components/header/Header";
 import Dropdown from "../components/Dropdown";
+import ProgressAnimation from "../components/ProgressAnimation";
 import "./Home.css";
-// import TranslateButton from "../components/TranslateButton";
 
 const Home = () => {
   const [showOriginal, setShowOriginal] = useState(false);
@@ -20,6 +20,7 @@ const Home = () => {
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState("");
   const [progress, setProgress] = useState(0);
+  const [reset, setReset] = useState(false);
 
   // القيم الافتراضية للقوائم تكون فارغة
   const [originalLanguage, setOriginalLanguage] = useState(null);
@@ -49,6 +50,8 @@ const Home = () => {
 
     setIsUploading(true);
     setMessage("");
+    setReset(true); // إعادة تعيين التقدم إلى 0
+    setProgress(0);
 
     const formData = new FormData();
     formData.append("file", file);
@@ -89,6 +92,7 @@ const Home = () => {
       console.error(error);
     } finally {
       setIsUploading(false);
+      setReset(false); // إيقاف إعادة التعيين بعد اكتمال الترجمة
     }
   };
 
@@ -129,7 +133,10 @@ const Home = () => {
             >
               Translate
             </button>
+
+            <ProgressAnimation progress={progress} reset={reset} />
             <p>Progress: {progress}%</p>
+
             <p>{message}</p>
           </div>
         </>
