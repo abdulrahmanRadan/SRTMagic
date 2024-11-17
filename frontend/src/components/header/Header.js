@@ -4,7 +4,7 @@ import "./Header.css";
 
 const Header = (props) => {
   return (
-    <header className={`header ${props.header}`}>
+    <header className={`header`}>
       <h1 className="text">SRT Magic </h1>
     </header>
   );

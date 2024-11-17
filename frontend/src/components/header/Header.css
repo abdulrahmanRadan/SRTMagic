@@ -1,6 +1,6 @@
 /* Header.css */
 .header {
-  @apply bg-blue-500 text-white p-4 rounded-lg;
+  @apply w-full bg-blue-500 text-white p-4 rounded-lg;
 }
 
 .header h1 {

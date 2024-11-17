@@ -1,10 +1,10 @@
 /* Home.css */
 .root {
-  @apply flex flex-col h-[100vh];
+  @apply flex flex-col h-screen items-center justify-center;
 }
 
 .main-page {
-  @apply flex flex-col items-center justify-center m-4;
+  @apply flex flex-col items-center justify-center my-8 flex-wrap w-full;
 }
 
 .wrapper {
@@ -13,8 +13,7 @@
 
 .wrapper .text {
   @apply text-2xl tracking-tight font-semibold w-full uppercase;
-  @apply whitespace-nowrap overflow-hidden;
-  border-right: 5px solid;
+  @apply whitespace-nowrap overflow-hidden border-r-4 border-solid;
   font-family: Arial, Helvetica, sans-serif;
   color: #f97800;
   animation: typing 3s steps(27), cursor 0.7s step-end infinite alternate;
@@ -34,13 +33,9 @@
 .main-page input {
   @apply inset-px bg-gray-300 p-4 rounded-xl fill-emerald-50;
 }
-.main-page button {
-  @apply inset-px bg-blue-400 p-4 rounded-xl fill-emerald-50 m-3 text-xl font-serif text-gray-700;
-  @apply border-2 border-emerald-300 shadow-2xl shadow-sky-300;
-}
 
 .dropdown-wrapper {
-  @apply flex p-2 m-2 space-x-4 justify-around w-full max-h-20;
+  @apply flex flex-col md:flex-row p-2 m-4 space-x-4 justify-around w-full;
 }
 
 .translate-button:disabled {
@@ -64,8 +59,11 @@
   outline: none;
   position: relative;
   padding: 10px;
+  margin-top: 40px;
 }
+
 .translate-button {
+  margin-top: 40px;
   min-width: 300px;
   min-height: 60px;
   display: inline-flex;
@@ -89,7 +87,6 @@
   box-shadow: 12px 12px 24px rgba(79, 209, 197, 0.64);
   transition: all 0.3s ease-in-out 0s;
   cursor: pointer;
-  cursor: not-allowed;
   outline: none;
   position: relative;
   padding: 10px;

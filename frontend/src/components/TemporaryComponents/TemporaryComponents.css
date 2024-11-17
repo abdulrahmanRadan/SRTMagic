@@ -1,30 +1,20 @@
 /* TemporaryComponent.css */
 body,
 html {
-  height: 100%;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @apply h-screen m-0 flex items-center justify-center;
 }
 
 .loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20rem;
-  height: 20rem;
-  position: relative;
+  @apply flex items-center justify-center w-80 h-80 relative;
 }
 
 .loading::before,
 .loading::after {
   content: "";
-  position: absolute;
-  border-radius: 50%;
+  @apply absolute rounded-full;
   inset: 0;
   animation: scale 2s infinite, colorChange 3s infinite;
-  animation-timing-function: cubic-bazier(0.42, 0, 0.58, 1);
+  animation-timing-function: cubic-bezier(0.42, 0, 0.58, 1);
 }
 
 .loading::before {
