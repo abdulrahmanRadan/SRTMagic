@@ -4,6 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const cors = require("cors");
 const translate = require("google-translate-api-x");
+const { detectTopicAndTerms } = require("./topicDetector"); // استيراد دالة تحديد الموضوع
 
 const app = express();
 const upload = multer({ dest: "uploads/" });
@@ -52,16 +53,37 @@ async function translateWithRetry(
   return text;
 }
 
-async function translateLines(lines, targetLang, originalLang) {
+async function translateLines(lines, targetLang, originalLang, topics) {
   const translatedLines = [];
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     if (isDialogue(line)) {
+      // استبدال المصطلحات بعلامات مؤقتة
+      let modifiedLine = line;
+      const placeholders = {};
+
+      topics.forEach((term, index) => {
+        const placeholder = `__TERM_${index}__`;
+        const regex = new RegExp(`\\b${term}\\b`, "gi");
+        if (regex.test(modifiedLine)) {
+          modifiedLine = modifiedLine.replace(regex, placeholder);
+          placeholders[placeholder] = term;
+        }
+      });
+
       const translated = await translateWithRetry(
         line,
         targetLang,
         originalLang
       );
+      // إعادة المصطلحات إلى النص المترجم
+      let finalTranslation = translated;
+      Object.keys(placeholders).forEach((placeholder) => {
+        const term = placeholders[placeholder];
+        const regex = new RegExp(placeholder, "g");
+        finalTranslation = finalTranslation.replace(regex, term);
+      });
+
       translatedLines.push(translated);
     } else {
       translatedLines.push(line);
@@ -77,18 +99,21 @@ app.post("/translate", upload.single("file"), async (req, res) => {
   const { file } = req;
   const originalLang = req.body.originalLanguage || "en";
   const targetLang = req.body.targetLanguage || "ar";
-  // console.log("Original Language: ", originalLang); // طباعة اللغة الأصلية
-  // console.log("Target Language: ", targetLang);
   if (!file) return res.status(400).send("Please upload a file");
 
   const filePath = path.resolve(file.path);
   const srtContent = fs.readFileSync(filePath, "utf-8");
   const srtLines = srtContent.split("\n");
 
+  // استدعاء دالة تحديد الموضوع
+  const topics = detectTopicAndTerms(filePath, file.originalname);
+  console.log("Detected Topics:", topics);
+
   const translatedLines = await translateLines(
     srtLines,
     targetLang,
-    originalLang
+    originalLang,
+    topics
   );
 
   // إعداد الملف كاستجابة قابلة للتنزيل
