@@ -12,6 +12,7 @@
   "dependencies": {
     "@vitalets/google-translate-api": "^9.2.0",
     "axios": "^1.7.7",
+    "compromise": "^14.14.2",
     "cors": "^2.8.5",
     "deepl-translator": "^1.2.1",
     "express": "^4.21.1",

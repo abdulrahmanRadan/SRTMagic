@@ -4,7 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const cors = require("cors");
 const translate = require("google-translate-api-x");
-const { detectTopicAndTerms } = require("./topicDetector"); // استيراد دالة تحديد الموضوع
+const { detectTechnicalTerms } = require("./topicDetector"); // استيراد دالة تحديد الموضوع
 
 const app = express();
 const upload = multer({ dest: "uploads/" });
@@ -53,7 +53,7 @@ async function translateWithRetry(
   return text;
 }
 
-async function translateLines(lines, targetLang, originalLang, topics) {
+async function translateLines(lines, targetLang, originalLang, termsToKeep) {
   const translatedLines = [];
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
@@ -61,18 +61,20 @@ async function translateLines(lines, targetLang, originalLang, topics) {
       // استبدال المصطلحات بعلامات مؤقتة
       let modifiedLine = line;
       const placeholders = {};
+      let index = 0;
 
-      topics.forEach((term, index) => {
+      termsSet.forEach((term) => {
         const placeholder = `__TERM_${index}__`;
         const regex = new RegExp(`\\b${term}\\b`, "gi");
         if (regex.test(modifiedLine)) {
           modifiedLine = modifiedLine.replace(regex, placeholder);
           placeholders[placeholder] = term;
+          index++;
         }
       });
 
       const translated = await translateWithRetry(
-        line,
+        modifiedLine,
         targetLang,
         originalLang
       );
@@ -84,7 +86,7 @@ async function translateLines(lines, targetLang, originalLang, topics) {
         finalTranslation = finalTranslation.replace(regex, term);
       });
 
-      translatedLines.push(translated);
+      translatedLines.push(finalTranslation);
     } else {
       translatedLines.push(line);
     }
@@ -106,14 +108,14 @@ app.post("/translate", upload.single("file"), async (req, res) => {
   const srtLines = srtContent.split("\n");
 
   // استدعاء دالة تحديد الموضوع
-  const topics = detectTopicAndTerms(filePath, file.originalname);
-  console.log("Detected Topics:", topics);
+  const termsToKeep = detectTechnicalTerms(filePath, file.originalname);
+  console.log("Terms to Keep Untranslated:", termsToKeep);
 
   const translatedLines = await translateLines(
     srtLines,
     targetLang,
     originalLang,
-    topics
+    termsToKeep // تمرير المصطلحات إلى دالة الترجمة
   );
 
   // إعداد الملف كاستجابة قابلة للتنزيل
